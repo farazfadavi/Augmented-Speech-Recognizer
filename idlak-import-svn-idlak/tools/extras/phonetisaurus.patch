@@ -1,0 +1,58 @@
+diff --git a/src/.autoconf/Makefile.in b/src/.autoconf/Makefile.in
+index 0eeebc6..8b07ba9 100644
+--- a/src/.autoconf/Makefile.in
++++ b/src/.autoconf/Makefile.in
+@@ -30,6 +30,8 @@ ACLOCAL_AMFLAGS = $(ACLOCAL_FLAGS) -I m4
+ BINDIR=bin
+ LIBDIR=lib
+ ROOT=$(shell pwd)
++CFLAGS = @CFLAGS@
++LDFLAGS = @LDFLAGS@ 
+ INSTALL_BIN = @INSTALL_BIN@
+ INSTALL_LIB = @INSTALL_LIB@
+ OPENFST_CXXFLAGS = @OPENFST_CXXFLAGS@
+@@ -93,27 +95,27 @@ rnnlm: $(BINDIR)/rnnlm
+ #General stuff
+ $(BINDIR)/phonetisaurus-align: $(LIBDIR)/util.o $(LIBDIR)/LatticePruner.o \
+ 	$(LIBDIR)/M2MFstAligner.o $(BINDIR)/phonetisaurus-align.cc
+-	$(CXX) $(EXTRA) -L$(OPENFST_LDFLAGS) $(LIBS) -I$(ROOT) \
++	$(CXX) $(EXTRA) -L$(OPENFST_LDFLAGS) $(LIBS) $(LDFLAGS) -I$(ROOT) \
+ 	$(LIBDIR)/util.o $(LIBDIR)/LatticePruner.o $(LIBDIR)/M2MFstAligner.o \
+ 	bin/phonetisaurus-align.cc -DGIT_REVISION=\"$(GIT_REVISION)\" \
+ 	-o $(BINDIR)/phonetisaurus-align $(LIBS)
+ 
+ $(BINDIR)/phonetisaurus-arpa2wfst: include/ARPA2WFST.h $(LIBDIR)/util.o
+-	$(CXX) $(EXTRA) -L$(OPENFST_LDFLAGS) $(LIBS) $(LIBDIR)/util.o \
++	$(CXX) $(EXTRA) -L$(OPENFST_LDFLAGS) $(LIBS) $(LDFLAGS) $(LIBDIR)/util.o \
+ 	-I$(ROOT) bin/phonetisaurus-arpa2wfst.cc -L$(OPENFST_LDFLAGS) \
+ 	-DGIT_REVISION=\"$(GIT_REVISION)\" \
+ 	-o $(BINDIR)/phonetisaurus-arpa2wfst $(LIBS)
+ 
+ $(BINDIR)/phonetisaurus-g2prnn: $(LIBDIR)/rnnlmlib.o bin/phonetisaurus-g2prnn.cc \
+ 	include/RnnLMDecoder.h include/LegacyRnnLMDecodable.h $(LIBDIR)/util.o
+-	$(CXX) $(EXTRA) $(LIBS) -L$(OPENFST_LDFLAGS) -funroll-loops -I$(ROOT) \
++	$(CXX) $(EXTRA) $(LIBS) $(LDFLAGS) -L$(OPENFST_LDFLAGS) -funroll-loops -I$(ROOT) \
+ 	-ffast-math $(LIBDIR)/util.o $(LIBDIR)/rnnlmlib.o \
+ 	-DGIT_REVISION=\"$(GIT_REVISION)\" \
+ 	bin/phonetisaurus-g2prnn.cc -o bin/phonetisaurus-g2prnn $(LIBS)
+ 
+ $(BINDIR)/phonetisaurus-g2pfst: bin/phonetisaurus-g2pfst.cc \
+ 	include/PhonetisaurusScript.h include/PhonetisaurusRex.h $(LIBDIR)/util.o
+-	$(CXX) $(EXTRA) $(LIBS) -L$(OPENFST_LDFLAGS) -I3rdparty/utfcpp \
++	$(CXX) $(EXTRA) $(LIBS) $(LDFLAGS) -L$(OPENFST_LDFLAGS) -I3rdparty/utfcpp \
+ 	-funroll-loops -I$(ROOT) -DGIT_REVISION=\"$(GIT_REVISION)\" \
+ 	-ffast-math $(LIBDIR)/util.o bin/phonetisaurus-g2pfst.cc \
+ 	-o bin/phonetisaurus-g2pfst $(LIBS)
+diff --git a/src/.autoconf/configure.ac b/src/.autoconf/configure.ac
+index 4127900..e1ddd6f 100644
+--- a/src/.autoconf/configure.ac
++++ b/src/.autoconf/configure.ac
+@@ -41,7 +41,7 @@ default_openfst_libs=/usr/local/lib
+ AC_ARG_WITH([openfst-libs],
+ 	[AS_HELP_STRING([--with-openfst-libs],
+ 	[Location of the OpenFst shared libraries.])],
+-	[OPENFST_LDFLAGS="$withval"; \
++	[OPENFST_LDFLAGS="$withval -Wl,-rpath=$withval"; \
+ 	echo "Set user-defined OpenFst libs: $withval"],
+ 	[OPENFST_LDFLAGS="$default_openfst_libs"; \
+ 	with_openfst_libs="$default_openfst_libs"; \

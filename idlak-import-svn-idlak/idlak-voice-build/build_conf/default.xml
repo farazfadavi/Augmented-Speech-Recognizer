@@ -1,0 +1,109 @@
+  <build_config>
+  <!-- language, accent, speaker, region filled in by speaker config -->
+  <!-- if working directories are not set they default to
+       (relative to idlak-voice-build directory)
+       idlakdata="../idlak-data"
+       idlakscratch="./idlak-scratch"
+       idlakwav="../idlak-data"
+       kaldidir=".."
+       otherwise relative to curdir -->
+  <!-- all general and log options can overridden on the comand line -->
+  <general
+      options="idlakdata,idlakscratch,idlakwav,kaldisrc,flist,clean,spkconf,bldconf,depend,force,buildid"
+      lang="xx"
+      lang_desc="SPK CONF: Lower case two letter iso language code e.g. 'en'"
+      acc="xx"
+      acc_desc="SPK CONF: Lower case two letter iso code e.g. 'ga' - General American"
+      reg="xx"
+      reg_desc="SPK CONF: Lower case two letter region iso code e.g. 'us' - United States"
+      spk="xxx"
+      spk_desc="SPK CONF: Lower case three letter speaker code e.g. 'bdl' - Arctic bdl speaker"
+      srate="16000"
+      srate_desc="Sample rate to build voice in Hz i.e. 16000 or 22050"
+      idlakdata=""
+      idlakscratch=""
+      idlakwav=""
+      kaldidir=""
+      buildid="00000000"
+      buildid_desc="Unique id for this build (typically YYYYMMDD)"
+      flist=""
+      flist_desc="File containing one file name stem per line either with or without spk value e.g. bdl_a0001_001 or a0001_001. If set uses only these files to build a voice."
+      clean="False"
+      clean_desc="If set keeps all data generated in idlak-scratch"
+      spkconf=""
+      splconf_desc="REQUIRED: Speaker configuration file"
+      bldconf=""
+      bldconf_desc="Custom build configuration file"
+      depend="False"
+      depend_desc="Build dependent modules if no present"
+      />
+  <!-- log level one of None, Critical, Error, Warn, Info, Debug -->
+  <logging
+      options = "nolog,logdir,logname,loglevel,logtofile,logtostderr"
+      nolog="False"
+      nolog_desc="Switch off log messages to file or screen or both"
+      logdir="."
+      logdir_desc="Directory to write log file if writing to file"
+      logname=""
+      logname_desc="Log filename"
+      loglevel="Debug"
+      loglevel_desc="one of None, Critical, Error, Warn, Info, Debug"
+      logtofile="False"
+      logtofile_desc="If set log messages to file"
+      logtostderr="True"
+      logtostderr_desc="If set log messages to screen on stderr"
+      />
+  <!-- When a module runs: if dependencies are switched on it will check
+       to see if dependent modules have been run if not it will run the the
+       dependent module. -->
+  <!-- WARNING: if a dependent module is run out of sequence later modules
+       will not detect the module data has changed and rerun to rebuild all 
+       remove all files connected with the buildid or choose a new buildid -->
+  <!-- Modules may have module specific options, if they are set in module
+       with a dependency or in the master build they will override
+       defaults and user build conf file values -->
+  <tree_def
+      depend="align_def,cex_def,pitch_def"
+      />
+  <!-- getf0="/home/matthewa/kaldi/esps/5.3.1/get_f0"
+       getf0_desc="The location of the get_f0 binary."
+       pplain="/home/matthewa/kaldi/esps/5.3.1/pplain"
+       pplain_desc="The location of the pplain binary." -->
+  <pitch_def
+      options="getf0,pplain"
+      getf0=""
+      getf0_desc="Set to file path of get_f0 use instead of kaldi pitch extraction"
+      pplain=""
+      pplain_desc="Set to file path of pplain use get_f0 instead of kaldi pitch extraction"
+      />    
+  <cex_def
+      options="hts"
+      depend="align_def"
+      hts="True"
+      hts_desc="Output context model names in a form useable by HTS"
+      />
+  <duration_def
+      depend="align_def"
+      />
+  <mcep_def 
+      options="sptk_root"
+      sptk_root=""
+      sptk_root_desc="The location of the SPTK directory."
+      /> 
+  <align_def
+      depend="alignsetup_def"
+      options="break2,break3,breakdef"
+      break="2:0.03,3:0.2"
+      break_desc="Assign break type 2 if pause less 0.03 sec, Assign break type 3 if pause less 0.2 sec"
+      breakdef="4"
+      breakdef_desc="Default break to break type 4" 
+      />     
+  <alignsetup_def 
+      />
+  <hts_test
+      depend="cex_def"
+      options="htsdemodir"
+      htsdemodir=""
+      htsdemodir_desc="Directory used to install HTSDEMO using utils/install_HTS_demo.sh"
+      />
+</build_config>
